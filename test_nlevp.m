@@ -100,90 +100,6 @@ set(gcf, 'Units', 'normalized', 'Position', [0.02 0.05 0.96 0.85]); % large & re
 export_fig(['fig/butterfly.pdf'])
 export_fig(['fig/butterfly.eps'])
 
-
-%% Fix degree
-clear all
-rng(1)
-sample = 50;
-center = 0.5+0.5*1i;
-rad = 0.2;
-bMax = 5;
-para.fval = 1;
-err = zeros(2,bMax);
-deg = zeros(2,bMax);
-[coef,~,T] = butterfly;
-n = size(coef{1},1);
-OmegaL0 = randn(n,bMax);
-OmegaR0 = randn(n,bMax);
-zzSet = cell(2,bMax);
-fzSet = cell(2,bMax);
-% compute reference sol
-region = center+rad*([1+1i,1-1i,-1-1i,-1+1i]);
-eval_p0 = polyeig(coef{:});
-eval_p = eval_p0(inpoly(eval_p0,region));
-% figure
-% hold on
-% 
-% plot(eval_p,'ro','MarkerSize',8,'LineWidth',1)
-% plot(eval_p0,'bx','MarkerSize',8,'LineWidth',1)
-% plot(contour(center,rad,sample),'k.')
-% 
-% hold off
-% set(gcf, 'Color', 'w');
-
-for iter = 1:2
-    switch iter
-        case 1
-        para.deg = 70;
-        case 2
-        para.deg = 51;
-    end
-    for b = 1:bMax
-        OmegaL = OmegaL0(:,1:b);
-        OmegaR = OmegaR0(:,1:b);
-        fun = @(z) OmegaL'*(T(z)\OmegaR);
-        [pol,zz,ff,deg(iter,b)] = aaa_evp(fun,center,rad,sample,b,1,para);
-        if para.fval == 1
-            fz = zeros(size(ff));
-            for ii = 1:size(ff)
-                fz(ii) = norm(ff{ii}-fun(zz(ii)));
-            end
-            zzSet{iter,b} = zz;
-            fzSet{iter,b} = fz;
-        end
-        err(iter,b) = cmpvec(eval_p,pol);
-    end
-end
-%% plot
-figure
-t = tiledlayout(2,bMax, 'TileSpacing', 'compact', 'Padding', 'loose'); % balance
-
-
-for iter = 1:2
-    for b = 1:bMax
-        nexttile;
-        hold on
-        plot_fx(zzSet{iter,b}, fzSet{iter,b}, center, rad);
-        plot(eval_p, 'wx');
-        plot(eval_p, 'ko');
-        hold off
-        % title(['N=',num2str(N),' and b=',num2str(b)],'FontSize',18)
-        title(['dist = ', num2str(err(iter,b), '%0.0e'), ' degree=',num2str(deg(iter,b))], 'FontSize', 16);
-        set(gca, 'FontSize', 12, 'LineWidth', 1.2);
-    end
-end
-
-colormap jet;
-cb = colorbar;
-cb.Layout.Tile = 'south';
-cb.FontSize = 16;
-
-set(gcf, 'Color', 'w');
-set(gcf, 'Units', 'normalized', 'Position', [0.02 0.05 0.96 0.85]); % large & readable
-
-export_fig(['fig/butterflyDeg.pdf'])
-export_fig(['fig/butterflyDeg.eps'])
-
 function [pol,zz,ff,deg] = aaa_evp(fun,center,rad,sample,b,N,para)
 % deg only works when N=1
 pol = [];
@@ -267,4 +183,5 @@ imagesc(xx,yy, FZ);
 set(gca, 'YDir', 'normal'); % keep y increasing upward
 clim([-14,0])
 axis equal tight off;
+
 end
