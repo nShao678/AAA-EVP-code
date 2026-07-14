@@ -12,4 +12,4 @@ test_nlevp.m is for Fig. 3.1 and 3.2
 
 test_stab.m is for Table 4.1 and 4.2
 
-[1]: Nian Shao and Yuji Nakatsukasa. ``Convergence analysis of a nonlinear eigensolver based on rational approximation of the resolvent.'' 
+[1]: Nian Shao and Yuji Nakatsukasa. ``Convergence analysis of a nonlinear eigensolver based on rational approximation of the resolvent.''  arXiv:2607.10377
